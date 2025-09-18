@@ -8,12 +8,7 @@ output_file = Path("communes.geojson")
 gdf = gpd.read_file(input_file)
 
 # Remove german and dutch duplicates of certain properties, keep only french
-def clean_properties(props):
-    return {
-        k: v for k, v in props.items()
-        if not (k.endswith("_nl") or k.endswith("_de"))
-    }
-gdf = gdf.assign(properties=[clean_properties(p) for p in gdf["properties"]]) if "properties" in gdf.columns else gdf
+gdf = gdf.drop(columns=[col for col in gdf.columns if col.endswith("_nl") or col.endswith("_de")])
 
 # aggregate to commune level 
 gdf_districts = gdf.dissolve(by="cd_munty_refnis", as_index=False)
